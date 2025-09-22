@@ -1,13 +1,13 @@
 import pygame
 import random
 from constants import *
-from drawing import draw_bars
-from algorithms import bubble_sort
+from drawing import draw_bars, draw_menu
+from algorithms import bubble_sort, insertion_sort
 
 def main():
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    pygame.display.set_caption("Algorithm Visualizer - Press SPACE to Sort, R to Reset")
+    pygame.display.set_caption("Algorithm Visualizer - Press 'R' to Reset")
     clock = pygame.time.Clock()
 
     list_size = 50
@@ -16,9 +16,13 @@ def main():
         return random.sample(range(10, 101), list_size)
 
     my_data = generate_new_list()
-    sort_generator = bubble_sort(my_data)
-    sorting = False
-
+    algorithms = {
+        "Bubble Sort": bubble_sort,
+        "Insertion Sort": insertion_sort
+    }
+    algo_names = list(algorithms.keys())
+    sort_generator = None
+    app_state = 'menu'
     running = True
     while running:
         clock.tick(60)
@@ -28,24 +32,32 @@ def main():
                 running = False
             
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and not sorting:
-                    sorting = True
                 if event.key == pygame.K_r:
                     my_data = generate_new_list()
-                    sort_generator = bubble_sort(my_data)
-                    sorting = False
-
-        if sorting:
-            try:
-                data_for_drawing = next(sort_generator)
-            except StopIteration:
-                sorting = False
-        else:
-            data_for_drawing = (my_data, ())
+                    sort_generator = None
+                    app_state = 'menu'
+                if app_state == 'menu':
+                    if event.key in [pygame.K_1, pygame.K_2, pygame.K_3]:
+                        choice_index = event.key - pygame.K_1
+                        if choice_index < len(algo_names):
+                            algo_name = algo_names[choice_index]
+                            sort_generator = algorithms[algo_name](my_data)
+                            app_state = 'sorting'
+        if app_state == 'menu':
+            draw_menu(screen, algo_names)
         
-        draw_bars(screen, data_for_drawing)
+        elif app_state == 'sorting':
+            screen.fill(BLACK)
+            if sort_generator:
+                try:
+                    data_for_drawing = next(sort_generator)
+                    draw_bars(screen, data_for_drawing)
+                except StopIteration:
+                    draw_bars(screen, (my_data, ()))
+                    sort_generator = None
+            else:
+                 draw_bars(screen, (my_data, ()))
         pygame.display.flip()
-
     pygame.quit()
 
 if __name__ == "__main__":
