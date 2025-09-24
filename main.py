@@ -2,7 +2,7 @@ import pygame
 import random
 from constants import *
 from drawing import draw_bars, draw_menu
-from algorithms import bubble_sort, insertion_sort, selection_sort
+from algorithms import bubble_sort, insertion_sort, selection_sort, merge_sort
 
 def main():
     pygame.init()
@@ -16,11 +16,11 @@ def main():
         return random.sample(range(10, 101), list_size)
 
     my_data = generate_new_list()
-    
     algorithms = {
         "Bubble Sort": bubble_sort,
         "Insertion Sort": insertion_sort,
-        "Selection Sort": selection_sort
+        "Selection Sort": selection_sort,
+        "Merge Sort": merge_sort
     }
     algo_names = list(algorithms.keys())
     sort_generator = None
@@ -42,7 +42,7 @@ def main():
                     app_state = 'menu'
                 
                 if app_state == 'menu':
-                    if event.key in [pygame.K_1, pygame.K_2, pygame.K_3]:
+                    if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4]:
                         choice_index = event.key - pygame.K_1
                         if choice_index < len(algo_names):
                             algo_name = algo_names[choice_index]
