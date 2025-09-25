@@ -1,14 +1,15 @@
 import pygame
 import random
 from constants import *
-from drawing import draw_bars, draw_menu
-from algorithms import bubble_sort, insertion_sort, selection_sort, merge_sort
+from drawing import draw_bars, draw_menu, draw_text
+from algorithms import bubble_sort, insertion_sort, selection_sort, merge_sort, quick_sort
 
 def main():
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    pygame.display.set_caption("Algorithm Visualizer - Press 'R' to Reset")
+    pygame.display.set_caption("Algorithm Visualizer")
     clock = pygame.time.Clock()
+    font = pygame.font.SysFont('Arial', 18)
 
     list_size = 50
     
@@ -17,20 +18,24 @@ def main():
 
     my_data = generate_new_list()
     algorithms = {
-        "Bubble Sort": bubble_sort,
-        "Insertion Sort": insertion_sort,
-        "Selection Sort": selection_sort,
-        "Merge Sort": merge_sort
+        "Bubble Sort":    {'func': bubble_sort, 'comp': 'O(n^2)'},
+        "Insertion Sort": {'func': insertion_sort, 'comp': 'O(n^2)'},
+        "Selection Sort": {'func': selection_sort, 'comp': 'O(n^2)'},
+        "Merge Sort":     {'func': merge_sort, 'comp': 'O(n log n)'},
+        "Quick Sort":     {'func': quick_sort, 'comp': 'O(n log n)'}
     }
     algo_names = list(algorithms.keys())
     sort_generator = None
+    current_algo_info = None
     
     app_state = 'menu'
 
     running = True
     while running:
         clock.tick(60)
-        
+
+        screen.fill(BLACK)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -42,27 +47,31 @@ def main():
                     app_state = 'menu'
                 
                 if app_state == 'menu':
-                    if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4]:
+                    if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5]:
                         choice_index = event.key - pygame.K_1
                         if choice_index < len(algo_names):
                             algo_name = algo_names[choice_index]
-                            sort_generator = algorithms[algo_name](my_data)
+                            current_algo_info = {'name': algo_name, 'comp': algorithms[algo_name]['comp']}
+                            sort_generator = algorithms[algo_name]['func'](my_data)
                             app_state = 'sorting'
         
         if app_state == 'menu':
             draw_menu(screen, algo_names)
         
         elif app_state == 'sorting':
-            screen.fill(BLACK)
             if sort_generator:
                 try:
                     data_for_drawing = next(sort_generator)
                     draw_bars(screen, data_for_drawing)
                 except StopIteration:
-                    draw_bars(screen, (my_data, ()))
+                    draw_bars(screen, {'list': my_data, 'highlights': {}})
                     sort_generator = None
             else:
-                 draw_bars(screen, (my_data, ()))
+                 draw_bars(screen, {'list': my_data, 'highlights': {}})
+            
+            if current_algo_info:
+                draw_text(screen, f"Algorithm: {current_algo_info['name']}", font, WHITE, (10, 10))
+                draw_text(screen, f"Time Complexity: {current_algo_info['comp']}", font, WHITE, (10, 35))
 
         pygame.display.flip()
 
