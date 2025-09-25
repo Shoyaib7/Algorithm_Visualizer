@@ -2,11 +2,12 @@
 
 def bubble_sort(data_list):
     n = len(data_list)
-    for i in range (n):
-        for j in range (0, n-i-1):
-            if data_list[j] > data_list[j+1]:
-                data_list[j], data_list[j+1] = data_list[j+1], data_list[j]
-            yield data_list,(j,j+1)
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            if data_list[j] > data_list[j + 1]:
+                data_list[j], data_list[j + 1] = data_list[j + 1], data_list[j]
+            yield {'list': data_list, 'highlights': {'general': (j, j + 1)}}
+    yield {'list': data_list, 'highlights': {}}
 
 # Insertion Sort
 
@@ -16,11 +17,11 @@ def insertion_sort(data_list):
         j = i - 1
         while j >= 0 and key < data_list[j]:
             data_list[j + 1] = data_list[j]
-            yield data_list, (i, j, -1)
+            yield {'list': data_list, 'highlights': {'pointers': (i, j)}}
             j -= 1
         data_list[j + 1] = key
-        yield data_list, (i, j + 1, -2)
-    yield data_list, ()
+        yield {'list': data_list, 'highlights': {'general': (i, j + 1)}}
+    yield {'list': data_list, 'highlights': {}}
 
 # Selection Sort
 
@@ -31,16 +32,16 @@ def selection_sort(data_list):
         for j in range(i + 1, n):
             if data_list[j] < data_list[min_idx]:
                 min_idx = j
-            yield data_list, (j, min_idx)
+            yield {'list': data_list, 'highlights': {'pointers': (j, min_idx)}}
         data_list[i], data_list[min_idx] = data_list[min_idx], data_list[i]
-        yield data_list, (i, min_idx)
-    yield data_list, ()    
+        yield {'list': data_list, 'highlights': {'general': (i, min_idx)}}
+    yield {'list': data_list, 'highlights': {}}
 
 # Merge Sort
 
 def merge_sort(data_list):
     yield from merge_sort_recursive(data_list, 0, len(data_list) - 1)
-    yield data_list, ()
+    yield {'list': data_list, 'highlights': {}}
 
 def merge_sort_recursive(data_list, left, right):
     if left < right:
@@ -52,10 +53,8 @@ def merge_sort_recursive(data_list, left, right):
 def merge(data_list, left, middle, right):
     left_copy = data_list[left : middle + 1]
     right_copy = data_list[middle + 1 : right + 1]
-
     i = j = 0
     k = left
-
     while i < len(left_copy) and j < len(right_copy):
         if left_copy[i] <= right_copy[j]:
             data_list[k] = left_copy[i]
@@ -63,17 +62,43 @@ def merge(data_list, left, middle, right):
         else:
             data_list[k] = right_copy[j]
             j += 1
-        yield data_list, (k,)
+        yield {'list': data_list, 'highlights': {'general': (k,)}}
         k += 1
-
     while i < len(left_copy):
         data_list[k] = left_copy[i]
-        yield data_list, (k,)
+        yield {'list': data_list, 'highlights': {'general': (k,)}}
         i += 1
         k += 1
-
     while j < len(right_copy):
         data_list[k] = right_copy[j]
-        yield data_list, (k,)
+        yield {'list': data_list, 'highlights': {'general': (k,)}}
         j += 1
         k += 1
+
+# Quick Sort
+
+def quick_sort(data_list):
+    yield from quick_sort_recursive(data_list, 0, len(data_list) - 1)
+    yield {'list': data_list, 'highlights': {}}
+
+def quick_sort_recursive(data_list, low, high):
+    if low < high:
+        pi = yield from partition(data_list, low, high)
+        yield from quick_sort_recursive(data_list, low, pi - 1)
+        yield from quick_sort_recursive(data_list, pi + 1, high)
+
+def partition(data_list, low, high):
+    pivot = data_list[high]
+    i = low - 1
+
+    for j in range(low, high):
+        if data_list[j] <= pivot:
+            i += 1
+            data_list[i], data_list[j] = data_list[j], data_list[i]
+        
+        highlights = {'pivot': [high], 'pointers': [i, j]}
+        yield {'list': data_list, 'highlights': highlights}
+
+    data_list[i + 1], data_list[high] = data_list[high], data_list[i + 1]
+    yield {'list': data_list, 'highlights': {'pivot': [i + 1]}}
+    return i + 1
