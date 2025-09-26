@@ -133,3 +133,44 @@ def heap_sort(data_list):
         yield from heapify(data_list, i, 0)
     
     yield {'list': data_list, 'highlights': {}}
+
+# Radix Sort
+
+def counting_sort_for_radix(data_list, exp):
+    n = len(data_list)
+    output = [0] * n
+    count = [0] * 10
+
+    for i in range(n):
+        index = data_list[i] // exp
+        count[index % 10] += 1
+        yield {'list': data_list, 'highlights': {'pointers': [i]}}
+
+    for i in range(1, 10):
+        count[i] += count[i - 1]
+
+    i = n - 1
+    while i >= 0:
+        index = data_list[i] // exp
+        output[count[index % 10] - 1] = data_list[i]
+        count[index % 10] -= 1
+        yield {'list': output, 'highlights': {'general': [i]}}
+        i -= 1
+
+    for i in range(n):
+        data_list[i] = output[i]
+        yield {'list': data_list, 'highlights': {'general': [i]}}
+
+def radix_sort(data_list):
+    if not data_list:
+        yield {'list': data_list, 'highlights': {}}
+        return
+
+    max1 = max(data_list)
+    exp = 1
+
+    while max1 // exp > 0:
+        yield from counting_sort_for_radix(data_list, exp)
+        exp *= 10
+    
+    yield {'list': data_list, 'highlights': {}}
