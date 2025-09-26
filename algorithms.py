@@ -102,3 +102,34 @@ def partition(data_list, low, high):
     data_list[i + 1], data_list[high] = data_list[high], data_list[i + 1]
     yield {'list': data_list, 'highlights': {'pivot': [i + 1]}}
     return i + 1
+
+# Heap Sort
+
+def heapify(data_list, n, i):
+    largest = i
+    left = 2 * i + 1
+    right = 2 * i + 2
+
+    if left < n and data_list[left] > data_list[largest]:
+        largest = left
+
+    if right < n and data_list[right] > data_list[largest]:
+        largest = right
+
+    if largest != i:
+        data_list[i], data_list[largest] = data_list[largest], data_list[i]
+        yield {'list': data_list, 'highlights': {'pointers': (i, largest)}}
+        yield from heapify(data_list, n, largest)
+
+def heap_sort(data_list):
+    n = len(data_list)
+
+    for i in range(n // 2 - 1, -1, -1):
+        yield from heapify(data_list, n, i)
+
+    for i in range(n - 1, 0, -1):
+        data_list[i], data_list[0] = data_list[0], data_list[i]  # swap
+        yield {'list': data_list, 'highlights': {'general': (i, 0)}}
+        yield from heapify(data_list, i, 0)
+    
+    yield {'list': data_list, 'highlights': {}}
