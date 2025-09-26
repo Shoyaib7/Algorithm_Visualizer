@@ -2,7 +2,7 @@ import pygame
 import random
 from constants import *
 from drawing import draw_bars, draw_menu, draw_text
-from algorithms import bubble_sort, insertion_sort, selection_sort, merge_sort, quick_sort
+from algorithms import bubble_sort, insertion_sort, selection_sort, merge_sort, quick_sort, heap_sort
 
 def main():
     pygame.init()
@@ -17,12 +17,14 @@ def main():
         return random.sample(range(10, 101), list_size)
 
     my_data = generate_new_list()
+
     algorithms = {
         "Bubble Sort":    {'func': bubble_sort, 'comp': 'O(n^2)'},
         "Insertion Sort": {'func': insertion_sort, 'comp': 'O(n^2)'},
         "Selection Sort": {'func': selection_sort, 'comp': 'O(n^2)'},
         "Merge Sort":     {'func': merge_sort, 'comp': 'O(n log n)'},
-        "Quick Sort":     {'func': quick_sort, 'comp': 'O(n log n)'}
+        "Quick Sort":     {'func': quick_sort, 'comp': 'O(n log n)'},
+        "Heap Sort":      {'func': heap_sort, 'comp': 'O(n log n)'}
     }
     algo_names = list(algorithms.keys())
     sort_generator = None
@@ -33,7 +35,7 @@ def main():
     running = True
     while running:
         clock.tick(60)
-
+        
         screen.fill(BLACK)
 
         for event in pygame.event.get():
@@ -47,7 +49,7 @@ def main():
                     app_state = 'menu'
                 
                 if app_state == 'menu':
-                    if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5]:
+                    if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6]:
                         choice_index = event.key - pygame.K_1
                         if choice_index < len(algo_names):
                             algo_name = algo_names[choice_index]
