@@ -2,7 +2,7 @@ import pygame
 import random
 from constants import *
 from drawing import draw_bars, draw_menu, draw_text
-from algorithms import bubble_sort, insertion_sort, selection_sort, merge_sort, quick_sort, heap_sort, radix_sort
+from algorithms import bubble_sort, insertion_sort, selection_sort, merge_sort, quick_sort, heap_sort, radix_sort, shell_sort
 
 def main():
     pygame.init()
@@ -25,7 +25,8 @@ def main():
         "Merge Sort":     {'func': merge_sort, 'comp': 'O(n log n)'},
         "Quick Sort":     {'func': quick_sort, 'comp': 'O(n log n)'},
         "Heap Sort":      {'func': heap_sort, 'comp': 'O(n log n)'},
-        "Radix Sort":     {'func': radix_sort, 'comp': 'O(nk)'}
+        "Radix Sort":     {'func': radix_sort, 'comp': 'O(nk)'},
+        "Shell Sort":     {'func': shell_sort, 'comp': 'O(n^2) worst case'}
     }
     algo_names = list(algorithms.keys())
     sort_generator = None
@@ -50,7 +51,7 @@ def main():
                     app_state = 'menu'
                 
                 if app_state == 'menu':
-                    if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7]:
+                    if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8]:
                         choice_index = event.key - pygame.K_1
                         if choice_index < len(algo_names):
                             algo_name = algo_names[choice_index]
