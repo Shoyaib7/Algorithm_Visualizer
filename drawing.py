@@ -5,17 +5,37 @@ def draw_text(screen, text, font, color, pos):
     text_surface = font.render(text, True, color)
     screen.blit(text_surface, pos)
 
-def draw_menu(screen, algorithms):
+def draw_menu(screen, algorithms, input_text):
+    screen.fill(BLACK)
     font = pygame.font.SysFont('Arial', 24)
     title_font = pygame.font.SysFont('Arial', 32, bold=True)
+    input_font = pygame.font.SysFont('Arial', 28)
 
     title_surface = title_font.render("Select an Algorithm:", True, WHITE)
     screen.blit(title_surface, (SCREEN_WIDTH // 2 - title_surface.get_width() // 2, 50))
 
     for i, name in enumerate(algorithms):
-        text = f"{i + 1}. {name}"
-        text_surface = font.render(text, True, WHITE)
-        screen.blit(text_surface, (SCREEN_WIDTH // 2 - text_surface.get_width() // 2, 120 + i * 40))    
+        if i < 10:
+            text = f"{i + 1}. {name}"
+            text_surface = font.render(text, True, WHITE)
+            screen.blit(text_surface, (50, 120 + i * 35))
+        elif i < 20:
+            text = f"{i + 1}. {name}"
+            text_surface = font.render(text, True, WHITE)
+            screen.blit(text_surface, (SCREEN_WIDTH // 2, 120 + (i - 10) * 35))
+
+    input_rect = pygame.Rect(SCREEN_WIDTH // 2 - 75, SCREEN_HEIGHT - 100, 150, 40)
+    pygame.draw.rect(screen, WHITE, input_rect, 2)
+    
+    input_surface = input_font.render(input_text, True, WHITE)
+    screen.blit(input_surface, (input_rect.x + 10, input_rect.y + 5))
+
+    if pygame.time.get_ticks() % 1000 < 500:
+        cursor_pos = input_surface.get_rect().width + input_rect.x + 10
+        pygame.draw.line(screen, WHITE, (cursor_pos, input_rect.y + 10), (cursor_pos, input_rect.y + 30), 2)
+    
+    instruction_text = font.render("Type a number and press ENTER", True, WHITE)
+    screen.blit(instruction_text, (SCREEN_WIDTH // 2 - instruction_text.get_width() // 2, SCREEN_HEIGHT - 50))
 
 def draw_bars(screen, data_info):
     data_list = data_info['list']
