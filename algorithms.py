@@ -232,4 +232,36 @@ def bucket_sort(data_list):
         data_list[i] = final_list[i]
         yield {'list': data_list, 'highlights': {'general': [i]}}
 
-    yield {'list': data_list, 'highlights': {}}  
+    yield {'list': data_list, 'highlights': {}}
+
+# Counting Sort
+
+def counting_sort(data_list):
+    if not data_list:
+        yield {'list': data_list, 'highlights': {}}
+        return
+
+    max_val = max(data_list)
+    n = len(data_list)
+    output = [0] * n
+    count = [0] * (max_val + 1)
+
+    for i in range(n):
+        count[data_list[i]] += 1
+        yield {'list': data_list, 'highlights': {'pointers': [i]}}
+
+    for i in range(1, max_val + 1):
+        count[i] += count[i - 1]
+
+    i = n - 1
+    while i >= 0:
+        output[count[data_list[i]] - 1] = data_list[i]
+        count[data_list[i]] -= 1
+        yield {'list': output, 'highlights': {'general': [i]}}
+        i -= 1
+
+    for i in range(n):
+        data_list[i] = output[i]
+        yield {'list': data_list, 'highlights': {'general': [i]}}
+
+    yield {'list': data_list, 'highlights': {}}    
