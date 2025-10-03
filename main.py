@@ -2,7 +2,8 @@ import pygame
 import random
 from constants import *
 from drawing import draw_bars, draw_menu, draw_text
-from algorithms import bubble_sort, insertion_sort, selection_sort, merge_sort, quick_sort, heap_sort, radix_sort, shell_sort
+from algorithms import (bubble_sort, insertion_sort, selection_sort, merge_sort, 
+                        quick_sort, heap_sort, radix_sort, shell_sort, bucket_sort)
 
 def main():
     pygame.init()
@@ -14,7 +15,7 @@ def main():
     list_size = 50
     
     def generate_new_list():
-        return random.sample(range(10, 101), list_size)
+        return [random.randint(10, 100) for _ in range(list_size)]
 
     my_data = generate_new_list()
     
@@ -26,7 +27,8 @@ def main():
         "Quick Sort":     {'func': quick_sort, 'comp': 'O(n log n)'},
         "Heap Sort":      {'func': heap_sort, 'comp': 'O(n log n)'},
         "Radix Sort":     {'func': radix_sort, 'comp': 'O(nk)'},
-        "Shell Sort":     {'func': shell_sort, 'comp': 'O(n^2) worst case'}
+        "Shell Sort":     {'func': shell_sort, 'comp': 'O(n^2) worst case'},
+        "Bucket Sort":    {'func': bucket_sort, 'comp': 'O(n+k) average'}
     }
     algo_names = list(algorithms.keys())
     sort_generator = None
@@ -51,11 +53,13 @@ def main():
                     app_state = 'menu'
                 
                 if app_state == 'menu':
-                    if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8]:
+                    if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9]:
                         choice_index = event.key - pygame.K_1
                         if choice_index < len(algo_names):
                             algo_name = algo_names[choice_index]
                             current_algo_info = {'name': algo_name, 'comp': algorithms[algo_name]['comp']}
+                            if algo_name == "Bucket Sort":
+                                my_data = [random.randint(10, 100) for _ in range(list_size)]
                             sort_generator = algorithms[algo_name]['func'](my_data)
                             app_state = 'sorting'
         
