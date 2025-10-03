@@ -3,7 +3,8 @@ import random
 from constants import *
 from drawing import draw_bars, draw_menu, draw_text
 from algorithms import (bubble_sort, insertion_sort, selection_sort, merge_sort, 
-                        quick_sort, heap_sort, radix_sort, shell_sort, bucket_sort)
+                        quick_sort, heap_sort, radix_sort, shell_sort, bucket_sort,
+                        counting_sort)
 
 def main():
     pygame.init()
@@ -28,13 +29,15 @@ def main():
         "Heap Sort":      {'func': heap_sort, 'comp': 'O(n log n)'},
         "Radix Sort":     {'func': radix_sort, 'comp': 'O(nk)'},
         "Shell Sort":     {'func': shell_sort, 'comp': 'O(n^2) worst case'},
-        "Bucket Sort":    {'func': bucket_sort, 'comp': 'O(n+k) average'}
+        "Bucket Sort":    {'func': bucket_sort, 'comp': 'O(n+k) average'},
+        "Counting Sort":  {'func': counting_sort, 'comp': 'O(n+k)'}
     }
     algo_names = list(algorithms.keys())
     sort_generator = None
     current_algo_info = None
     
     app_state = 'menu'
+    user_input = ""
 
     running = True
     while running:
@@ -51,21 +54,32 @@ def main():
                     my_data = generate_new_list()
                     sort_generator = None
                     app_state = 'menu'
+                    user_input = ""
                 
                 if app_state == 'menu':
-                    if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9]:
-                        choice_index = event.key - pygame.K_1
-                        if choice_index < len(algo_names):
-                            algo_name = algo_names[choice_index]
-                            current_algo_info = {'name': algo_name, 'comp': algorithms[algo_name]['comp']}
-                            if algo_name == "Bucket Sort":
-                                my_data = [random.randint(10, 100) for _ in range(list_size)]
-                            sort_generator = algorithms[algo_name]['func'](my_data)
-                            app_state = 'sorting'
+                    if event.key == pygame.K_RETURN:
+                        try:
+                            choice_num = int(user_input)
+                            if 1 <= choice_num <= len(algo_names):
+                                choice_index = choice_num - 1
+                                algo_name = algo_names[choice_index]
+                                current_algo_info = {'name': algo_name, 'comp': algorithms[algo_name]['comp']}
+                                my_data = generate_new_list()
+                                sort_generator = algorithms[algo_name]['func'](my_data)
+                                app_state = 'sorting'
+                                user_input = ""
+                        except ValueError:
+                            user_input = ""
+                    
+                    elif event.key == pygame.K_BACKSPACE:
+                        user_input = user_input[:-1]
+                    
+                    elif event.unicode.isdigit():
+                        user_input += event.unicode
         
         if app_state == 'menu':
-            draw_menu(screen, algo_names)
-        
+            draw_menu(screen, algo_names, user_input)
+
         elif app_state == 'sorting':
             if sort_generator:
                 try:
