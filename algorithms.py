@@ -174,3 +174,23 @@ def radix_sort(data_list):
         exp *= 10
     
     yield {'list': data_list, 'highlights': {}}
+
+# Shell Sort
+
+def shell_sort(data_list):
+    n = len(data_list)
+    gap = n // 2
+
+    while gap > 0:
+        for i in range(gap, n):
+            temp = data_list[i]
+            j = i
+            while j >= gap and data_list[j - gap] > temp:
+                data_list[j] = data_list[j - gap]
+                yield {'list': data_list, 'highlights': {'pointers': (j, j - gap)}}
+                j -= gap
+            data_list[j] = temp
+            yield {'list': data_list, 'highlights': {'general': (i, j)}}
+        gap //= 2
+    
+    yield {'list': data_list, 'highlights': {}}
