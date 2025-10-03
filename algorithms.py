@@ -194,3 +194,42 @@ def shell_sort(data_list):
         gap //= 2
     
     yield {'list': data_list, 'highlights': {}}
+
+# Bucket Sort
+
+def bucket_sort(data_list):
+    if not data_list:
+        yield {'list': data_list, 'highlights': {}}
+        return
+
+    max_val = max(data_list)
+    size = max_val / len(data_list) if len(data_list) > 0 else 1
+    bucket_list = [[] for _ in range(len(data_list))]
+
+    for i in range(len(data_list)):
+        j = int(data_list[i] / size)
+        if j >= len(data_list):
+            j = len(data_list) - 1
+        bucket_list[j].append(data_list[i])
+        yield {'list': data_list, 'highlights': {'pointers': [i]}}
+
+    final_list = []
+    for i in range(len(bucket_list)):
+        bucket_generator = insertion_sort(bucket_list[i])
+        while True:
+            try:
+                next_state = next(bucket_generator)
+                bucket_list[i] = next_state['list']
+                current_full_list = final_list + [item for sublist in bucket_list[i:] for item in sublist]
+                
+                yield {'list': current_full_list, 'highlights': next_state['highlights']}
+            except StopIteration:
+                break
+
+        final_list.extend(bucket_list[i])
+
+    for i in range(len(final_list)):
+        data_list[i] = final_list[i]
+        yield {'list': data_list, 'highlights': {'general': [i]}}
+
+    yield {'list': data_list, 'highlights': {}}  
