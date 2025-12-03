@@ -264,4 +264,40 @@ def counting_sort(data_list):
         data_list[i] = output[i]
         yield {'list': data_list, 'highlights': {'general': [i]}}
 
-    yield {'list': data_list, 'highlights': {}}    
+    yield {'list': data_list, 'highlights': {}}   
+
+
+# Cocktail Shaker Sort
+
+def cocktail_shaker_sort(data_list):
+    """A generator that implements the Cocktail Shaker Sort algorithm."""
+    n = len(data_list)
+    swapped = True
+    start = 0
+    end = n - 1
+
+    while swapped:
+        swapped = False
+
+        for i in range(start, end):
+            if data_list[i] > data_list[i + 1]:
+                data_list[i], data_list[i + 1] = data_list[i + 1], data_list[i]
+                swapped = True
+            yield {'list': data_list, 'highlights': {'pointers': [i, i + 1]}}
+
+        if not swapped:
+            yield {'list': data_list, 'highlights': {}}
+            break
+
+        swapped = False
+        end -= 1
+
+        for i in range(end - 1, start - 1, -1):
+            if data_list[i] > data_list[i + 1]:
+                data_list[i], data_list[i + 1] = data_list[i + 1], data_list[i]
+                swapped = True
+            yield {'list': data_list, 'highlights': {'pointers': [i, i + 1]}}
+
+        start += 1
+    
+    yield {'list': data_list, 'highlights': {}}
